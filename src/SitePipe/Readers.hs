@@ -39,8 +39,12 @@ mkPandocReaderWith :: (ReaderOptions -> String -> PandocIO Pandoc) -> (Pandoc ->
 mkPandocReaderWith pReader transformer writer content =
   runPandoc $ writer
           =<< transformer
-          =<< pReader def{readerExtensions = githubMarkdownExtensions}
-                      content
+          =<< pReader opts content
+  where
+    opts = def
+      { readerExtensions =
+          enableExtension Ext_tex_math_dollars githubMarkdownExtensions
+      }
 
 -- | A simple helper which renders pandoc to HTML; good for use with 'mkPandocReaderWith'
 pandocToHTML :: Pandoc -> PandocIO String
